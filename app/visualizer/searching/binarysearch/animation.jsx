@@ -193,14 +193,14 @@ const BinarySearch = () => {
               id="arrayElements"
               value={arrayElements}
               onChange={(e) => setArrayElements(e.target.value)}
-              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition duration-300"
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-[#a435f0] focus:outline-none focus:ring-2 focus:ring-[#a435f0]/30 dark:focus:ring-[#a435f0]/30 transition duration-300"
               placeholder="e.g., 1, 3, 4, 6, 8"
               disabled={isAnimating}
             />
             <button
               type="button"
               onClick={generateRandomArray}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 transition duration-300"
+              className="px-4 py-2 font-bold bg-[#a435f0] text-white rounded-lg hover:bg-[#8f2cd6] transition-all duration-200"
               disabled={isAnimating}
             >
               Random
@@ -221,7 +221,7 @@ const BinarySearch = () => {
               id="target"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              className="w-full sm:max-w-xs p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-400 transition duration-300"
+              className="w-full sm:max-w-xs p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:border-[#a435f0] focus:outline-none focus:ring-2 focus:ring-[#a435f0]/30 dark:focus:ring-[#a435f0]/30 transition duration-300"
               placeholder="eg. 4"
               disabled={isAnimating}
             />

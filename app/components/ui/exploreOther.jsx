@@ -30,8 +30,8 @@ const ExploreOther = ({
     >
       <div className="p-5 sm:p-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white flex items-center gap-3">
-            <span className="w-2 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full flex-shrink-0"></span>
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}>
+            <span className="w-2 h-6 bg-gradient-to-b from-[#a435f0] to-[#7c3aed] rounded-full flex-shrink-0"></span>
             {title}
           </h2>
         </div>
@@ -45,19 +45,19 @@ const ExploreOther = ({
               rel={isExternal(link.url) ? "noopener noreferrer" : ""}
               whileHover={{ y: -3 }}
               whileTap={{ scale: 0.98 }}
-              className="group relative block p-4 rounded-lg border border-gray-200/70 dark:border-gray-700/70 hover:border-blue-400/70 dark:hover:border-blue-500/70 transition-all duration-200 bg-gradient-to-b from-white/50 to-white/0 dark:from-gray-700/20 dark:to-gray-700/5 hover:from-blue-50/50 hover:to-blue-50/10 dark:hover:from-blue-900/15 dark:hover:to-blue-900/5 overflow-hidden"
+              className="group relative block p-4 rounded-lg border border-gray-200/70 dark:border-gray-700/70 hover:border-[#a435f0]/70 dark:hover:border-[#a435f0]/70 transition-all duration-200 bg-gradient-to-b from-white/50 to-white/0 dark:from-gray-700/20 dark:to-gray-700/5 hover:from-[#faf5ff]/50 hover:to-[#faf5ff]/10 dark:hover:from-[#a435f0]/10 dark:hover:to-[#a435f0]/5 overflow-hidden"
             >
               {/* Animated hover effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/5 to-blue-500/0 opacity-0 group-hover:opacity-100 dark:via-blue-600/10 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-[#a435f0]/0 via-[#a435f0]/5 to-[#a435f0]/0 opacity-0 group-hover:opacity-100 dark:via-[#a435f0]/10 transition-opacity duration-300"></div>
               
               <div className="relative flex items-center gap-3">
                 {/* Custom icon or default */}
-                <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-blue-100/70 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:bg-blue-200/70 dark:group-hover:bg-blue-800/30 transition-colors shadow-inner">
+                <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-[#faf5ff] dark:bg-[#a435f0]/10 flex items-center justify-center text-[#a435f0] dark:text-[#c084fc] group-hover:bg-[#f3e8ff] dark:group-hover:bg-[#a435f0]/20 transition-colors shadow-inner">
                   {link.icon || icon}
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium transition-colors truncate">
+                  <p className="text-gray-800 dark:text-gray-200 group-hover:text-[#a435f0] dark:group-hover:text-[#c084fc] font-medium transition-colors truncate">
                     {link.text}
                   </p>
                   {link.description && (
@@ -69,7 +69,7 @@ const ExploreOther = ({
                 
                 {/* External link indicator */}
                 {showExternalIcon && isExternal(link.url) && (
-                  <FiExternalLink className="flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors" />
+                  <FiExternalLink className="flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-[#a435f0] dark:group-hover:text-[#c084fc] transition-colors" />
                 )}
               </div>
             </motion.a>

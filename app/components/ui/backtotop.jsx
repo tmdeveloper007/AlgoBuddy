@@ -27,11 +27,11 @@ const BackToTop = () => {
       className={`
         fixed bottom-6 right-6 z-50
         w-12 h-12 rounded-full
-        bg-gradient-to-br from-blue-500 to-blue-600
+        bg-[#a435f0]
         text-white shadow-lg
         transition-all duration-300 ease-in-out
         flex items-center justify-center
-        hover:from-blue-600 hover:to-blue-700
+        hover:bg-[#8f2cd6]
         ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}
         group
       `}

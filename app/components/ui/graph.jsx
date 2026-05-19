@@ -73,7 +73,7 @@ const ComplexityGraph = ({
 
   return (
     <div className="w-full h-[400px] my-1 p-2 bg-neutral-50 dark:bg-neutral-900 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-      <h2 className="text-center text-2xl font-bold mb-1 text-gray-800 dark:text-gray-100">
+      <h2 className="text-center text-2xl font-black mb-1 text-gray-800 dark:text-gray-100" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}>
         {title}
       </h2>
       

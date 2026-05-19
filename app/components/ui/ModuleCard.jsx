@@ -36,7 +36,7 @@ export default function ModuleCard({ moduleId, description, initialDone }) {
   async function toggleCompletion() {
     if (!user) {
       toast.custom((t) => (
-        <div className="max-w-sm w-full bg-neutral-100 dark:bg-zinc-800 border border-blue-500 rounded-lg shadow-xl p-4 flex flex-col gap-2">
+        <div className="max-w-sm w-full bg-neutral-100 dark:bg-zinc-800 border border-[#a435f0] rounded-lg shadow-xl p-4 flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <TriangleAlert size={50} className="dark:text-yellow-500 text-red-500" />
             <span className="text-sm text-gray-800 dark:text-gray-100">
@@ -49,13 +49,13 @@ export default function ModuleCard({ moduleId, description, initialDone }) {
                 window.location.href = "/login";
                 toast.dismiss(t.id);
               }}
-              className="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition duration-300 shadow-md flex items-center gap-2"
+              className="px-4 py-2 rounded-full font-medium bg-gradient-to-r from-[#a435f0] to-[#7c3aed] text-white hover:from-[#7c3aed] hover:to-[#6d28d9] transition duration-300 shadow-md flex items-center gap-2"
             >
               Login/Signup
             </button>
             <button
               onClick={() => toast.dismiss(t.id)}
-              className="px-4 py-2 rounded-full font-medium bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 border border-blue-500 dark:text-white text-black transition duration-300 shadow-lg flex items-center"
+              className="px-4 py-2 rounded-full font-medium bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-900 dark:bg-neutral-800 border border-[#a435f0] dark:text-white text-black transition duration-300 shadow-lg flex items-center"
             >
               Continue as Guest
             </button>
@@ -100,7 +100,7 @@ export default function ModuleCard({ moduleId, description, initialDone }) {
     >
       <div className="my-4 px-4 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          <h1 className="text-lg font-black text-gray-800 dark:text-gray-200" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}>
             Done With the Learning
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
@@ -110,7 +110,7 @@ export default function ModuleCard({ moduleId, description, initialDone }) {
           checked={isDone}
           onChange={toggleCompletion}
           className={`w-6 h-6 rounded cursor-pointer transition duration-300 ${
-            isDone ? "accent-green-500 ring-2 ring-green-500" : "accent-blue-600"
+            isDone ? "accent-green-500 ring-2 ring-green-500" : "accent-[#a435f0]"
           }`}
         />
       </div>

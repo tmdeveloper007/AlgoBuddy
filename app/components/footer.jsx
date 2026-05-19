@@ -17,7 +17,10 @@ const Footer = () => {
 
       <div className="max-w-3xl mx-auto px-6 py-14 flex flex-col items-center text-center space-y-6">
         {/* Brand */}
-        <span className="text-xl font-bold font-serif text-udemy-dark-text tracking-tight">
+        <span 
+          className="text-xl font-black text-udemy-dark-text tracking-tight"
+          style={{ fontFamily: "'Inter', 'Source Sans 3', sans-serif", letterSpacing: '-0.03em' }}
+        >
           Algo<span className="text-udemy-purple">Buddy</span>
         </span>
 

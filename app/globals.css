@@ -171,3 +171,15 @@ html {
 .bot-wiggle {
   animation: bot-vibe 1s infinite;
 }
+
+/* ── Force hljs code blocks to always render with dark-theme colors ── */
+/* This prevents the page's light-mode body color from cascading into   */
+/* syntax-highlighted code, keeping atom-one-dark colors consistent.    */
+.hljs-force-dark {
+  color-scheme: dark;
+  color: #abb2bf !important; /* atom-one-dark base text */
+}
+.hljs-force-dark .hljs {
+  background: transparent !important;
+  color: #abb2bf !important;
+}

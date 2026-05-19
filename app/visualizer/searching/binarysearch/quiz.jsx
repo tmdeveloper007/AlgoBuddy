@@ -157,39 +157,39 @@ const BinarySearchQuiz = () => {
               className="text-center"
             >
               <div className="flex justify-center mb-6">
-                <div className="bg-blue-100 dark:bg-neutral-900 p-4 rounded-full">
-                  <FaAward className="text-4xl text-blue-500 dark:text-blue-500" />
+                <div className="bg-[#faf5ff] dark:bg-neutral-900 p-4 rounded-full">
+                  <FaAward className="text-4xl text-[#a435f0] dark:text-[#a435f0]" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold mb-4 text-black dark:text-gray-100">
+              <h2 className="text-2xl font-black mb-4 text-black dark:text-gray-100" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}>
                 Binary Search Quiz Challenge
               </h2>
               <div className="bg-white dark:bg-neutral-900 p-4 rounded-lg mb-6 text-left shadow-inner">
-                <h3 className="font-bold mb-2 flex items-center text-blue-600 dark:text-blue-400">
+                <h3 className="font-black mb-2 flex items-center text-[#a435f0] dark:text-[#c084fc]" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>
                   <FaInfoCircle className="mr-2" /> How it works:
                 </h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start">
-                    <FaCheck className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                    <FaCheck className="text-[#a435f0] mt-1 mr-2 flex-shrink-0" />
                     <span>+1 point for each correct answer</span>
                   </li>
                   <li className="flex items-start">
-                    <FaTimes className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                    <FaTimes className="text-[#a435f0] mt-1 mr-2 flex-shrink-0" />
                     <span>0 points for wrong answers</span>
                   </li>
                   <li className="flex items-start">
-                    <FaInfoCircle className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                    <FaInfoCircle className="text-[#a435f0] mt-1 mr-2 flex-shrink-0" />
                     <span>-0.5 point penalty for viewing explanations</span>
                   </li>
                   <li className="flex items-start">
-                    <FaTrophy className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
+                    <FaTrophy className="text-[#a435f0] mt-1 mr-2 flex-shrink-0" />
                     <span>Earn stars based on your final score (max 5 stars)</span>
                   </li>
                 </ul>
               </div>
               <button
                 onClick={startQuiz}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg flex items-center mx-auto"
+                className="px-6 py-3 bg-[#a435f0] text-white rounded-lg hover:from-[#a435f0] hover:to-[#7c3aed] transition-all shadow-md hover:shadow-lg flex items-center mx-auto"
               >
                 Start Quiz <FaArrowRight className="ml-2" />
               </button>
@@ -226,16 +226,16 @@ const BinarySearchQuiz = () => {
             <div className="quiz-container">
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                  <span className="text-sm font-medium text-[#a435f0] dark:text-[#c084fc]">
                     Question {currentQuestion + 1} of {questions.length}
                   </span>
-                  <span className="text-sm font-medium bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded text-blue-600 dark:text-blue-400">
+                  <span className="text-sm font-medium bg-[#faf5ff] dark:bg-[#a435f0]/10 px-2 py-1 rounded text-[#a435f0] dark:text-[#c084fc]">
                     Score: {score.toFixed(1)}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full transition-all duration-500" 
+                    className="bg-gradient-to-r from-[#a435f0] to-purple-500 h-2.5 rounded-full transition-all duration-500" 
                     style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
                   />
                 </div>
@@ -247,7 +247,7 @@ const BinarySearchQuiz = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <h3 className="text-xl font-semibold mb-6 dark:text-white p-4">
+                <h3 className="text-xl font-black mb-6 dark:text-white p-4" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>
                   {questions[currentQuestion].question}
                 </h3>
                 
@@ -259,7 +259,7 @@ const BinarySearchQuiz = () => {
                       whileTap={{ scale: 0.98 }}
                       className={`p-4 border rounded-lg cursor-pointer transition-all ${
                         selectedAnswer === index
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+                          ? 'border-[#a435f0] bg-[#faf5ff] dark:bg-[#a435f0]/10 shadow-md'
                           : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                       onClick={() => handleAnswerSelect(index)}
@@ -267,7 +267,7 @@ const BinarySearchQuiz = () => {
                       <div className="flex items-center">
                         <span className={`font-medium mr-3 w-6 h-6 flex items-center justify-center rounded-full ${
                           selectedAnswer === index 
-                            ? 'bg-blue-500 text-white' 
+                            ? 'bg-[#a435f0] text-white' 
                             : 'bg-gray-200 dark:bg-gray-600'
                         }`}>
                           {String.fromCharCode(65 + index)}
@@ -292,7 +292,7 @@ const BinarySearchQuiz = () => {
                 <button
                   onClick={handleNextQuestion}
                   disabled={selectedAnswer === null}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 hover:from-blue-600 hover:to-purple-600 transition-all flex items-center shadow-md hover:shadow-lg"
+                  className="px-4 py-2 bg-[#a435f0] text-white rounded-lg disabled:opacity-50 hover:from-[#a435f0] hover:to-[#7c3aed] transition-all flex items-center shadow-md hover:shadow-lg"
                 >
                   {currentQuestion === questions.length - 1 ? 'Finish' : 'Next'} <FaArrowRight className="ml-2" />
                 </button>
@@ -306,8 +306,8 @@ const BinarySearchQuiz = () => {
             >
               <div className="text-center mb-8">
                 <div className="relative inline-block mb-4">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 rounded-full flex items-center justify-center shadow-lg">
-                    <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
+                  <div className="w-32 h-32 bg-gradient-to-br from-[#faf5ff] to-[#e9d5ff] dark:from-[#a435f0]/10 dark:to-[#7c3aed]/10 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="text-4xl font-bold text-[#a435f0] dark:text-[#c084fc]">
                       {score.toFixed(1)}/{questions.length}
                     </div>
                   </div>
@@ -325,7 +325,7 @@ const BinarySearchQuiz = () => {
                   </div>
                 </div>
                 
-                <h3 className="text-2xl font-bold mb-2 dark:text-white">
+                <h3 className="text-2xl font-black mb-2 dark:text-white" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.03em' }}>
                   {score === questions.length ? "Perfect Score!" :
                    score >= questions.length * 0.8 ? "Excellent Work!" :
                    score >= questions.length * 0.6 ? "Good Job!" :
@@ -337,14 +337,14 @@ const BinarySearchQuiz = () => {
               </div>
               
               <div className="bg-white dark:bg-gray-700 p-4 rounded-lg mb-6 shadow-inner">
-                <h4 className="font-bold mb-3 flex items-center text-blue-600 dark:text-blue-400">
+                <h4 className="font-black mb-3 flex items-center text-[#a435f0] dark:text-[#c084fc]" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>
                   <FaInfoCircle className="mr-2" /> Performance Analysis
                 </h4>
                 <p className="text-sm">{calculateWeakAreas()}</p>
               </div>
               
               <div className="space-y-4 mb-8">
-                <h4 className="font-bold text-gray-700 dark:text-gray-300">Question Breakdown:</h4>
+                <h4 className="font-black text-gray-700 dark:text-gray-300" style={{ fontFamily: "'Inter', sans-serif", letterSpacing: '-0.02em' }}>Question Breakdown:</h4>
                 {questions.map((q, index) => (
                   <div key={index} className="border-b pb-3 border-gray-200 dark:border-gray-700 last:border-0">
                     <p className="font-medium text-gray-800 dark:text-gray-200">{q.question}</p>
@@ -371,7 +371,7 @@ const BinarySearchQuiz = () => {
               
               <button
                 onClick={resetQuiz}
-                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-600 transition-all shadow-md hover:shadow-lg flex items-center justify-center"
+                className="w-full px-6 py-3 bg-[#a435f0] text-white rounded-lg hover:from-[#7c3aed] hover:to-[#7c3aed] transition-all shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 <FaRedo className="mr-2" /> Take Quiz Again
               </button>

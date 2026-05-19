@@ -6,7 +6,7 @@ const GoButton = ({ onGo, isAnimating }) => {
     <button
       type="submit"
       onClick={onGo}
-      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg disabled:opacity-50 transition-colors"
+      className="flex-1 bg-[#a435f0] text-white font-bold py-3 rounded-lg hover:bg-[#8f2cd6] disabled:opacity-50 transition-all duration-200"
       disabled={isAnimating}
     >
       Go
