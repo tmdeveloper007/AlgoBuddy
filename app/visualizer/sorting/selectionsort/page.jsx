@@ -71,6 +71,7 @@ export default function Page() {
             },
             { text: "Merge Sort", url: "/visualizer/sorting/mergesort" },
             { text: "Comparison Mode", url: "/visualizer/sorting/comparison" },
+            { text: "Counting Sort", url: "/visualizer/sorting/countingsort" },
             { text: "Heap Sort", url: "/algorithms/sorting/heap" },
           ]}
         />
