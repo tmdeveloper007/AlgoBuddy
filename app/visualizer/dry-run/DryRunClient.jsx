@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -13,6 +13,11 @@ import {
   Terminal,
 } from "lucide-react";
 import Link from "next/link";
+import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes";
+import { useUser } from "@/app/contexts/UserContext";
+import { useCollaboration } from "@/app/components/ui/useCollaboration";
+import useVisualizerKeyboard from "@/app/hooks/useVisualizerKeyboard";
 
 const SAMPLES = {
   JavaScript: `const numbers = [5, 2, 8, 1];
@@ -49,6 +54,13 @@ const LANGUAGE_HINTS = {
   Python: "Traces lists, assignments, if branches, swap calls, and print output.",
   "C++": "Traces vector declarations, scalar assignments, if branches, swap calls, and cout output.",
   Java: "Traces primitive types, array declarations, if branches, swap calls, and System.out.println output.",
+};
+
+const MONACO_LANGUAGE_MAP = {
+  JavaScript: "javascript",
+  Python: "python",
+  "C++": "cpp",
+  Java: "java",
 };
 
 function cloneVariables(variables) {
@@ -339,20 +351,104 @@ function DataPreview({ title, values, variant = "array" }) {
 }
 
 export default function DryRunClient() {
+  const { resolvedTheme } = useTheme();
+  const isDarkMode = resolvedTheme === "dark";
+  const { user } = useUser();
   const [language, setLanguage] = useState("JavaScript");
   const [source, setSource] = useState(SAMPLES.JavaScript);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(900);
+  const [sessionTitle, setSessionTitle] = useState("Dry-run study room");
+  const [sessionVisibility, setSessionVisibility] = useState("public");
+  const [sessionPassword, setSessionPassword] = useState("");
+  const [sessionCodeInput, setSessionCodeInput] = useState("");
+  const [joinPassword, setJoinPassword] = useState("");
+  const [annotationDraft, setAnnotationDraft] = useState("");
+  const [sessionJoinUrl, setSessionJoinUrl] = useState("");
+  const [followPresenter, setFollowPresenter] = useState(true);
+  const [sessionActionLoading, setSessionActionLoading] = useState(false);
+  const [sessionNotice, setSessionNotice] = useState("");
+  const [importNotice, setImportNotice] = useState("");
+
+  const suppressBroadcastRef = useRef(false);
+  const sendStateRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const displayName =
+    user?.user_metadata?.name || user?.email?.split("@")[0] || "Anonymous";
+
+  function handleRemoteStateDelta(delta) {
+    const effectivePresenterId =
+      delta.presenterId !== undefined ? delta.presenterId : collaboration.presenterId;
+    const isPresenter =
+      effectivePresenterId && effectivePresenterId === collaboration.clientId;
+
+    if (!followPresenter && !isPresenter) {
+      return;
+    }
+
+    suppressBroadcastRef.current = true;
+
+    if (typeof delta.source === "string") {
+      setSource(delta.source);
+    }
+    if (typeof delta.language === "string") {
+      setLanguage(delta.language);
+    }
+    if (typeof delta.step === "number") {
+      setStep(delta.step);
+    }
+    if (typeof delta.playing === "boolean") {
+      setPlaying(delta.playing);
+    }
+    if (typeof delta.speed === "number") {
+      setSpeed(delta.speed);
+    }
+
+    window.setTimeout(() => {
+      suppressBroadcastRef.current = false;
+    }, 0);
+  }
+
+  const collaboration = useCollaboration({
+    displayName,
+    onRemoteStateDelta: handleRemoteStateDelta,
+  });
+
+  const { session: collabSession, presenterId: collabPresenterId, clientId: collabClientId } =
+    collaboration;
 
   const trace = useMemo(() => buildTrace(source), [source]);
   const current = trace[Math.min(step, trace.length - 1)];
   const sourceLines = source.split("\n");
+  const monacoLanguage = useMemo(
+    () => MONACO_LANGUAGE_MAP[language] || "javascript",
+    [language]
+  );
 
   useEffect(() => {
     setStep(0);
     setPlaying(false);
   }, [source, language]);
+
+  const isAtEnd = step >= trace.length - 1;
+
+  useVisualizerKeyboard({
+    onStart: () => {
+      if (isAtEnd) setStep(0);
+      setPlaying(true);
+    },
+    onReset: () => {
+      setStep(0);
+      setPlaying(false);
+    },
+    onTogglePlayPause: () => setPlaying((value) => !value),
+    onSpeedChange: setSpeed,
+    speed,
+    sorting: playing,
+    sorted: isAtEnd,
+  });
 
   useEffect(() => {
     if (!playing) return;
@@ -369,9 +465,142 @@ export default function DryRunClient() {
     return () => window.clearInterval(timer);
   }, [playing, speed, trace.length]);
 
+  useEffect(() => {
+    sendStateRef.current = collaboration.sendEnvelope;
+  }, [collaboration.sendEnvelope]);
+
+  useEffect(() => {
+    if (!collabSession) return;
+    if (suppressBroadcastRef.current) {
+      suppressBroadcastRef.current = false;
+      return;
+    }
+
+    if (collabPresenterId && collabPresenterId !== collabClientId) {
+      return;
+    }
+
+    sendStateRef.current?.({
+      source,
+      language,
+      step,
+      playing,
+      speed,
+      currentFrameId: `${language}:${step}`,
+    });
+  }, [
+    source,
+    language,
+    step,
+    playing,
+    speed,
+    collabSession,
+    collabPresenterId,
+    collabClientId,
+  ]);
+
   const updateLanguage = (nextLanguage) => {
     setLanguage(nextLanguage);
     setSource(SAMPLES[nextLanguage]);
+  };
+
+  const handleCreateSession = async () => {
+    setSessionActionLoading(true);
+    setSessionNotice("");
+    setImportNotice("");
+    try {
+      const data = await collaboration.createSession({
+        title: sessionTitle,
+        visibility: sessionVisibility,
+        password: sessionVisibility === "private" ? sessionPassword : undefined,
+        module: "dry-run",
+        createdBy: displayName,
+      });
+      setSessionJoinUrl(data.joinUrl);
+      setSessionNotice(`Created ${data.session.visibility} session ${data.session.joinCode}.`);
+    } catch (error) {
+      setSessionNotice(error.message || "Failed to create session.");
+    } finally {
+      setSessionActionLoading(false);
+    }
+  };
+
+  const handleJoinSession = async () => {
+    setSessionActionLoading(true);
+    setSessionNotice("");
+    setImportNotice("");
+    try {
+      const data = await collaboration.joinSession({
+        sessionCode: sessionCodeInput,
+        password: joinPassword,
+        createdBy: displayName,
+      });
+      setSessionJoinUrl(`/visualizer/dry-run?session=${data.session.joinCode}`);
+      setSessionNotice(`Joined session ${data.session.joinCode}.`);
+    } catch (error) {
+      setSessionNotice(error.message || "Failed to join session.");
+    } finally {
+      setSessionActionLoading(false);
+    }
+  };
+
+  const handleLeaveSession = async () => {
+    await collaboration.leaveSession();
+    setSessionJoinUrl("");
+    setSessionNotice("Left the collaboration session.");
+    setAnnotationDraft("");
+  };
+
+  const handleAddAnnotation = () => {
+    const annotation = collaboration.addAnnotation({
+      timeIndex: step,
+      text: annotationDraft,
+    });
+
+    if (annotation) {
+      setAnnotationDraft("");
+      setSessionNotice(`Added annotation at step ${step + 1}.`);
+    }
+  };
+
+  const handleExportRecording = () => {
+    const traceJson = collaboration.exportRecording();
+    const blob = new Blob([traceJson], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `algobuddy-session-${new Date().toISOString().slice(0, 19).replaceAll(":", "-")}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setSessionNotice("Exported session trace.");
+  };
+
+  const handleImportRecording = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const snapshot = collaboration.importRecording(text, {
+        source: SAMPLES.JavaScript,
+        language: "JavaScript",
+        step: 0,
+        playing: false,
+        speed: 900,
+      });
+
+      setSource(snapshot.source || SAMPLES.JavaScript);
+      setLanguage(snapshot.language || "JavaScript");
+      setStep(snapshot.step || 0);
+      setPlaying(Boolean(snapshot.playing));
+      setSpeed(snapshot.speed || 900);
+      setImportNotice(`Imported ${file.name}.`);
+      setSessionNotice("Replayed the imported trace locally.");
+    } catch (error) {
+      setImportNotice(error.message || "Failed to import session trace.");
+    } finally {
+      event.target.value = "";
+    }
   };
 
   return (
@@ -435,13 +664,31 @@ export default function DryRunClient() {
               Reset sample
             </button>
           </div>
-          <textarea
-            value={source}
-            onChange={(event) => setSource(event.target.value)}
-            spellCheck={false}
-            className="min-h-[420px] w-full resize-y bg-slate-950 p-4 font-mono text-sm leading-6 text-slate-100 outline-none"
-            aria-label="Code input for dry run visualizer"
-          />
+          <div className="overflow-hidden rounded-b-xl">
+            <Editor
+              height="420px"
+              language={monacoLanguage}
+              theme={isDarkMode ? "vs-dark" : "light"}
+              value={source}
+              onChange={(value) => setSource(value || "")}
+              loading={
+                <div className="flex h-[420px] items-center justify-center bg-slate-950 font-mono text-sm text-slate-400">
+                  Loading Editor...
+                </div>
+              }
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                fontFamily: "'Fira Code', 'Courier New', Courier, monospace",
+                lineHeight: 22,
+                padding: { top: 16, bottom: 16 },
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                cursorBlinking: "smooth",
+                renderLineHighlight: "all",
+              }}
+            />
+          </div>
         </section>
 
         <section className="space-y-4">
