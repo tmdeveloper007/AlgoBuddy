@@ -456,6 +456,9 @@ const sections = [
           { name: "Insertion", path: "/visualizer/trees/bst/insertion" },
           { name: "Deletion", path: "/visualizer/trees/bst/deletion" },
           { name: "Searching", path: "/visualizer/trees/bst/searching" },
+          { name: "In-order Traversal", path: "/visualizer/trees/bst/in-order" },
+          { name: "Pre-order Traversal", path: "/visualizer/trees/bst/pre-order" },
+          { name: "Post-order Traversal", path: "/visualizer/trees/bst/post-order" },
           { name: "Balancing (AVL)", path: "/visualizer/trees/bst/avl" },
         ],
       },
@@ -486,6 +489,8 @@ const sections = [
             path: "/visualizer/trees/advanced/red-black",
           },
           { name: "B-Trees", path: "/visualizer/trees/advanced/b-trees" },
+          { name: "AVL Tree Insertion", path: "/visualizer/trees/avl/insertion" },
+          { name: "AVL Tree Deletion", path: "/visualizer/trees/avl/deletion" },
           {
             name: "Trie (Prefix Tree)",
             path: "/visualizer/trees/advanced/trie",
@@ -518,6 +523,11 @@ const sections = [
       {
         title: "Applications",
         items: [
+          {
+            name: "Heap (Min/Max)",
+            path: "/visualizer/trees/heap/min-heap",
+          },
+          { name: "Heap (Max)", path: "/visualizer/trees/heap/max-heap" },
           {
             name: "Heap Sort",
             path: "/visualizer/trees/applications/heapsort",
