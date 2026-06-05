@@ -172,6 +172,9 @@ export default function Navbar() {
                   }`}
                 >
                   {l.label}
+                  {l.label === "Community" && process.env.NEXT_PUBLIC_SHOW_COMMUNITY_BADGE === "true" && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold text-white bg-purple-600 rounded">NEW</span>
+                  )}
                 </Link>
               );
             })}
@@ -313,6 +316,9 @@ export default function Navbar() {
                   }`}
                 >
                   {l.label}
+                  {l.label === "Community" && process.env.NEXT_PUBLIC_SHOW_COMMUNITY_BADGE === "true" && (
+                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold text-white bg-purple-600 rounded">NEW</span>
+                  )}
                 </Link>
               );
             })}
