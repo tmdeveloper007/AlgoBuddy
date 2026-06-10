@@ -258,10 +258,12 @@ export async function POST(req) {
 
       const admin = createClient(supabaseUrl, serviceKey);
 
+      const emailConfirm = process.env.AUTO_CONFIRM_EMAIL === "true";
+
       const { error } = await admin.auth.admin.createUser({
         email,
         password,
-        email_confirm: true,
+        email_confirm: emailConfirm,
         user_metadata: { display_name: name },
       });
 
@@ -269,10 +271,18 @@ export async function POST(req) {
         return jsonResponse({ success: false, message: error.message }, 400);
       }
 
+      if (emailConfirm) {
+        return jsonResponse({
+          success: true,
+          message: "Signup successful. You can now log in!",
+          trigger: true,
+        });
+      }
+
       return jsonResponse({
         success: true,
-        message: "Signup successful. You can now log in!",
-        trigger: true,
+        message: "Signup successful! Please check your email to verify your account before logging in.",
+        trigger: false,
       });
     }
 
