@@ -467,14 +467,29 @@ Please explain exactly what is happening in this step in detail.`;
             </div>
             
             <div className="mt-6 flex justify-center gap-6 text-xs text-gray-500 dark:text-gray-400 font-medium">
-               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-[#F3E8FF] border border-[#A855F7]"></div> Active Window</div>
-               <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-[#E5E7EB] border border-[#D1D5DB]"></div> Outside Window</div>
-               {problemType.includes('var') && (
-                 <>
-                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-[#FEE2E2] border border-[#EF4444]"></div> Violation</div>
-                   <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-[#DCFCE7] border border-[#22C55E]"></div> Target Reached</div>
-                 </>
-               )}
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded bg-[#F3E8FF] border border-[#D8B4FE]" />
+                <span>Window</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded bg-[#E5E7EB] border border-gray-300" />
+                <span>Normal</span>
+              </div>
+
+              {problemType.includes("var") && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-[#FEE2E2] border border-red-300" />
+                    <span>Removed</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded bg-[#DCFCE7] border border-green-300" />
+                    <span>Added</span>
+                  </div>
+                </>
+              )}
             </div>
             </div>
           </div>
