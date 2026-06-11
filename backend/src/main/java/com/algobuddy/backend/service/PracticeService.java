@@ -56,23 +56,9 @@ public class PracticeService {
         OffsetDateTime startOfWeek = now.toLocalDate().with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay(now.getOffset()).toOffsetDateTime();
         OffsetDateTime startOfMonth = now.toLocalDate().withDayOfMonth(1).atStartOfDay(now.getOffset()).toOffsetDateTime();
 
-        int dailySolved = 0;
-        int weeklySolved = 0;
-        int monthlySolved = 0;
-
-        for (UserProgress p : progressList) {
-            if ("Completed".equals(p.getStatus()) && p.getUpdatedAt() != null) {
-                if (!p.getUpdatedAt().isBefore(startOfDay)) {
-                    dailySolved++;
-                }
-                if (!p.getUpdatedAt().isBefore(startOfWeek)) {
-                    weeklySolved++;
-                }
-                if (!p.getUpdatedAt().isBefore(startOfMonth)) {
-                    monthlySolved++;
-                }
-            }
-        }
+        int dailySolved = progressRepository.countCompletedSince(userId, startOfDay);
+        int weeklySolved = progressRepository.countCompletedSince(userId, startOfWeek);
+        int monthlySolved = progressRepository.countCompletedSince(userId, startOfMonth);
 
         return ProgressResponse.builder()
                 .progress(progressMap)
@@ -118,31 +104,46 @@ public class PracticeService {
             return getUserProgress(userId);
         }
 
+        List<String> problemIds = request.getItems().stream()
+                .map(BulkProgressRequest.Item::getProblemId)
+                .filter(id -> id != null && !id.trim().isEmpty())
+                .collect(Collectors.toList());
+
+        if (problemIds.isEmpty()) {
+            return getUserProgress(userId);
+        }
+
+        List<UserProgress> existingProgresses = progressRepository.findByUserIdAndProblemIdIn(userId, problemIds);
+        Map<String, UserProgress> existingMap = existingProgresses.stream()
+                .collect(Collectors.toMap(UserProgress::getProblemId, p -> p));
+
         boolean anyCompleted = false;
         OffsetDateTime now = OffsetDateTime.now();
-
+        
         for (BulkProgressRequest.Item item : request.getItems()) {
-            if (item.getProblemId() == null || item.getStatus() == null) continue;
+            if (item.getProblemId() == null || item.getProblemId().trim().isEmpty() || item.getStatus() == null) {
+                continue;
+            }
 
-            Optional<UserProgress> existing = progressRepository.findByUserIdAndProblemId(userId, item.getProblemId());
-            if (existing.isPresent()) {
-                UserProgress progress = existing.get();
+            UserProgress progress = existingMap.get(item.getProblemId());
+            if (progress != null) {
                 progress.setStatus(item.getStatus());
                 progress.setUpdatedAt(now);
-                progressRepository.save(progress);
             } else {
-                UserProgress newProgress = new UserProgress();
-                newProgress.setUserId(userId);
-                newProgress.setProblemId(item.getProblemId());
-                newProgress.setStatus(item.getStatus());
-                newProgress.setUpdatedAt(now);
-                progressRepository.save(newProgress);
+                progress = new UserProgress();
+                progress.setUserId(userId);
+                progress.setProblemId(item.getProblemId());
+                progress.setStatus(item.getStatus());
+                progress.setUpdatedAt(now);
+                existingMap.put(item.getProblemId(), progress); // Ensure we save the new ones too
             }
 
             if ("Completed".equals(item.getStatus())) {
                 anyCompleted = true;
             }
         }
+
+        progressRepository.saveAll(existingMap.values());
 
         // Only update streak once even if multiple problems were completed
         if (anyCompleted) {
