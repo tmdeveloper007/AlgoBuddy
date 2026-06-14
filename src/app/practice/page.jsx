@@ -68,6 +68,13 @@ export default function PracticePage() {
   // Authentication check & mount
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get("view");
+      if (view) {
+        setActiveView(view);
+      }
+    }
   }, []);
 
   const ensureLoggedIn = () => {
@@ -271,6 +278,18 @@ export default function PracticePage() {
 
   const totalPages = Math.ceil(filteredProblems.length / itemsPerPage);
 
+  const handleShareSheet = () => {
+    if (!user) return;
+    const shareUrl = `${window.location.origin}/practice/shared/${user.id}`;
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        toast.success("Share link copied to clipboard! 📋");
+      })
+      .catch(() => {
+        toast.error("Failed to copy link. Please copy manually.");
+      });
+  };
+
   // Solve random unsolved problem
   const handleSolveRandom = () => {
     if (!ensureLoggedIn()) return;
@@ -349,7 +368,19 @@ export default function PracticePage() {
                       </div>
                       <span className="text-xs font-black uppercase tracking-widest text-purple-200">Personal Practice List</span>
                     </div>
-                    <h2 className="text-2xl font-black">My Sheet</h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-2xl font-black">My Sheet</h2>
+                      {user && (
+                        <button
+                          onClick={handleShareSheet}
+                          className="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/10"
+                          title="Share your sheet with others"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                          <span>Share</span>
+                        </button>
+                      )}
+                    </div>
                     <p className="text-sm text-purple-200 mt-1">
                       {sheetCount > 0
                         ? `${sheetCount} problem${sheetCount !== 1 ? 's' : ''} curated · ${Object.values(sheet).filter((_,i) => getStatus(Object.keys(sheet)[i]) === 'Completed').length} solved`
