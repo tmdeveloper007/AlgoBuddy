@@ -34,6 +34,10 @@ public class PracticeService {
     private final UserProgressRepository progressRepository;
     private final UserPracticeStatsRepository statsRepository;
 
+    @Autowired
+    @Lazy
+    private PracticeService self;
+
 
     @Transactional(readOnly = true)
     public ProgressResponse getUserProgress(UUID userId) {
@@ -73,7 +77,7 @@ public class PracticeService {
         progressRepository.upsertProgress(userId, request.getProblemId(), request.getStatus());
 
         if ("Completed".equals(request.getStatus())) {
-            updateStreak(userId);
+            updateStreakWithRetry(userId);
         }
 
         return getUserProgress(userId);
@@ -124,13 +128,33 @@ public class PracticeService {
         progressRepository.saveAll(toSave);
 
         if (anyCompleted) {
-            updateStreak(userId);
+            updateStreakWithRetry(userId);
         }
 
         return getUserProgress(userId);
     }
 
-    @Transactional
+    public void updateStreakWithRetry(UUID userId) {
+        final int MAX_RETRIES = 3;
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                self.updateStreak(userId);
+                return;
+            } catch (ObjectOptimisticLockingFailureException e) {
+                if (attempt == MAX_RETRIES) {
+                    log.error("Failed to update streak for user {} after {} attempts", userId, MAX_RETRIES, e);
+                    throw e;
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateStreak(UUID userId) {
         UserPracticeStats stats = statsRepository.findById(userId)
                 .orElse(new UserPracticeStats(userId, 0, 0, null, 0, 0));
@@ -154,6 +178,6 @@ public class PracticeService {
         // If lastActive == today, do nothing (streak already incremented today)
 
         stats.setLastActiveDate(today);
-        statsRepository.save(stats);
+        statsRepository.saveAndFlush(stats);
     }
 }
