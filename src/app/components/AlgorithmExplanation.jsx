@@ -1,56 +1,83 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Clock, Database } from "lucide-react";
+import { Sparkles, BookOpen, Clock, Database } from "lucide-react";
 
 export default function AlgorithmExplanation({ explanation }) {
   return (
-    <div className="w-full mt-5 bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-5 shadow-lg shadow-black/20">
-      
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <BookOpen className="text-[#c084fc]" size={22} />
-        <h2 className="text-lg font-bold text-white">
-          Step-by-Step Explanation
-        </h2>
-      </div>
+    <div className="w-full mt-5 rounded-2xl border border-purple-200 dark:border-purple-900 
+      bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
 
-      {/* Current Step Explanation */}
-      <div className="bg-slate-950/60 border border-slate-700 rounded-xl p-4 mb-4">
-        <h3 className="text-sm font-bold text-[#c084fc] mb-2">
-          Current Operation
-        </h3>
-        <p className="text-slate-300 text-sm">
-          {explanation ||
-            "The algorithm is analyzing the current step and explaining the operation being performed."}
-        </p>
-      </div>
-
-      {/* Data Structure State */}
-      <div className="flex items-start gap-3 bg-slate-950/40 p-3 rounded-xl mb-3">
-        <Database className="text-blue-400 mt-1" size={18} />
+      {/* AI Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-500 p-4 flex items-center gap-3">
+        <Sparkles className="text-white" size={22} />
         <div>
-          <h4 className="text-sm font-semibold text-white">
-            Data Structure State
-          </h4>
-          <p className="text-xs text-slate-400">
-            Shows how elements, nodes, or values are changing during execution.
+          <h2 className="text-white font-bold text-lg">
+            AI Algorithm Assistant
+          </h2>
+          <p className="text-purple-100 text-sm">
+            Smart explanation for your current algorithm step
           </p>
         </div>
       </div>
 
-      {/* Complexity Information */}
-      <div className="flex items-start gap-3 bg-slate-950/40 p-3 rounded-xl">
-        <Clock className="text-green-400 mt-1" size={18} />
-        <div>
-          <h4 className="text-sm font-semibold text-white">
-            Complexity Insight
-          </h4>
-          <p className="text-xs text-slate-400">
-            The number of comparisons and operations contributes to the overall
-            time and space complexity of the algorithm.
+      <div className="p-5 space-y-4">
+
+        {/* Explanation Card */}
+        <div className="rounded-xl border border-purple-200 dark:border-purple-700 
+          bg-purple-50 dark:bg-slate-800 p-4">
+
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen className="text-purple-600 dark:text-purple-400" size={18}/>
+            <h3 className="font-semibold text-slate-800 dark:text-white">
+              Current Step Explanation
+            </h3>
+          </div>
+
+          <p className="text-sm text-slate-700 dark:text-slate-300">
+            {explanation ||
+              "AI is analyzing the algorithm step and generating an easy-to-understand explanation."}
           </p>
         </div>
+
+
+        {/* Data State Card */}
+        <div className="rounded-xl bg-blue-50 dark:bg-slate-800 p-4 
+          border border-blue-200 dark:border-blue-700">
+
+          <div className="flex gap-2 items-center mb-2">
+            <Database className="text-blue-600" size={18}/>
+            <h3 className="font-semibold text-slate-800 dark:text-white">
+              Data Structure Insight
+            </h3>
+          </div>
+
+          <p className="text-sm text-slate-700 dark:text-slate-300">
+            Visualize how values, nodes, and elements are modified during the
+            current execution step.
+          </p>
+
+        </div>
+
+
+        {/* Complexity Card */}
+        <div className="rounded-xl bg-green-50 dark:bg-slate-800 p-4
+          border border-green-200 dark:border-green-700">
+
+          <div className="flex gap-2 items-center mb-2">
+            <Clock className="text-green-600" size={18}/>
+            <h3 className="font-semibold text-slate-800 dark:text-white">
+              Complexity Insight
+            </h3>
+          </div>
+
+          <p className="text-sm text-slate-700 dark:text-slate-300">
+            Understand how comparisons, swaps, and operations affect the
+            algorithm's time and space complexity.
+          </p>
+
+        </div>
+
       </div>
     </div>
   );
