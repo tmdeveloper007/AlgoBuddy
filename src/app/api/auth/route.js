@@ -79,15 +79,10 @@ function startMemorySweeper() {
     for (const [k, bucket] of memoryFailures.entries()) {
       if (bucket.resetAt <= now) memoryFailures.delete(k);
     }
-    if (memoryLockouts.size > MAX_MEMORY_LOCKOUTS) {
-      const toEvict = memoryLockouts.size - MAX_MEMORY_LOCKOUTS;
-      const iter = memoryLockouts.keys();
-      for (let i = 0; i < toEvict; i++) {
-        const k = iter.next().value;
-        if (k !== undefined) memoryLockouts.delete(k);
-      }
-      console.warn(`[auth] Evicted ${toEvict} lockout entries: exceeded ${MAX_MEMORY_LOCKOUTS} limit`);
-    }
+    // memoryLockouts is exempt from size-based eviction to prevent brute-force
+    // bypass (an attacker flooding dummy emails should not flush a target's lockout).
+    // OOM risk is low since lockouts require 5 consecutive failures before creation.
+    // memoryFailures gets size limits to bound the higher-volume failure tracking.
     if (memoryFailures.size > MAX_MEMORY_FAILURES) {
       const toEvict = memoryFailures.size - MAX_MEMORY_FAILURES;
       const iter = memoryFailures.keys();
