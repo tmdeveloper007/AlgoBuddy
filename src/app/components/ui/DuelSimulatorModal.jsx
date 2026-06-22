@@ -162,6 +162,20 @@ export default function DuelSimulatorModal({ isOpen, onClose, opponent, currentU
     newSocket.on("opponent_test_result", (data) => {
       setOppStatus(`Tested. Status: ${data.status}`);
       addLog(`Opponent execution result: ${(data.status === 3 || data.status === "SUCCESS") ? "Accepted" : "Failed"}`);
+      
+      if (data.passed) {
+        setOppCode("// Opponent's tests passed!");
+      } else {
+        setOppCode("// Opponent's tests failed...");
+      }
+      
+      // After 3 seconds, if they haven't won the match, revert to thinking
+      setTimeout(() => {
+        setOppCode((prev) => {
+          if (prev.includes("tests")) return "// Opponent is thinking...";
+          return prev;
+        });
+      }, 3000);
     });
 
     newSocket.on("match_ended", (data) => {

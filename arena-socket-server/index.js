@@ -515,6 +515,21 @@ io.on("connection", async (socket) => {
     }
   });
 
+  socket.on("test_result", async (data) => {
+    try {
+      if (await isRateLimited(socket.data.userId)) return;
+      const matchId = await redisClient.hget(`{arena}:socket:${socket.id}`, "matchId");
+      if (!matchId || matchId !== data.matchId) return;
+
+      socket.to(data.matchId).emit("opponent_test_result", {
+        passed: data.passed,
+        userId: socket.data.userId
+      });
+    } catch (error) {
+      console.error(`[test_result] Error for user ${socket.data.userId}:`, error);
+    }
+  });
+
   socket.on("test_submit", async (data) => {
     try {
       if (await isRateLimited(socket.data.userId)) return;
