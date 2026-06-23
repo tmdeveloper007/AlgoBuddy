@@ -583,31 +583,38 @@ io.on("connection", async (socket) => {
       const matchId = await redisClient.hget(`{arena}:socket:${socket.id}`, "matchId");
       if (!matchId || matchId !== data.matchId) return;
 
-      const ATOMIC_COMPLETE_SCRIPT = `
+      const ATOMIC_COMPLETE_SCRIPT_V2 = `
         local matchKey = KEYS[1]
-        local matchStr = redis.call('GET', matchKey)
-        if not matchStr then return 0 end
-        
-        -- Check if already completed
-        if string.find(matchStr, '"status"%s*:%s*"completed"') then
+        local winnerId = ARGV[1]
+
+        local completionKey = matchKey .. ":completed"
+        local completed = redis.call('SET', completionKey, winnerId, 'NX', 'EX', 3600)
+        if not completed then
           return 0
         end
-        
-        -- Replace status and add/replace winnerId
+
+        local matchStr = redis.call('GET', matchKey)
+        if not matchStr then
+          redis.call('DEL', completionKey)
+          return 0
+        end
+
         local updated = string.gsub(matchStr, '"status"%s*:%s*"[^"]+"', '"status":"completed"')
         if string.find(updated, '"winnerId"') then
-          updated = string.gsub(updated, '"winnerId"%s*:%s*"[^"]+"', '"winnerId":"' .. ARGV[1] .. '"')
+          updated = string.gsub(updated, '"winnerId"%s*:%s*"[^"]+"', '"winnerId":"' .. winnerId .. '"')
         else
-          updated = string.gsub(updated, '}%s*$', ',"winnerId":"' .. ARGV[1] .. '"}')
+          updated = string.gsub(updated, '}%s*$', ',"winnerId":"' .. winnerId .. '"}')
         end
-        
+
         redis.call('SET', matchKey, updated)
         return 1
       `;
 
       try {
-        const acquired = await redisClient.eval(ATOMIC_COMPLETE_SCRIPT, 1, `{arena}:match:${matchId}`, socket.data.userId);
-        if (acquired !== 1) return;
+        const acquired = await redisClient.eval(ATOMIC_COMPLETE_SCRIPT_V2, 1, `{arena}:match:${matchId}`, socket.data.userId);
+        if (acquired !== 1) {
+          return;
+        }
 
         io.in(matchId).emit("match_ended", { winnerId: socket.data.userId });
 
@@ -620,26 +627,7 @@ io.on("connection", async (socket) => {
         }
         await redisClient.expire(`{arena}:match:${matchId}`, 60 * 60);
       } catch (err) {
-        if (err.message && err.message.includes('cjson')) {
-          const matchStr = await redisClient.get(`{arena}:match:${matchId}`);
-          if (matchStr) {
-            const match = JSON.parse(matchStr);
-            if (match.status !== "completed") {
-              match.status = "completed";
-              match.winnerId = socket.data.userId;
-              await redisClient.set(`{arena}:match:${matchId}`, JSON.stringify(match));
-
-              io.in(matchId).emit("match_ended", { winnerId: socket.data.userId });
-
-              for (const p of match.players) {
-                await redisClient.hdel(`{arena}:socket:${p.socketId}`, "matchId");
-              }
-              await redisClient.expire(`{arena}:match:${matchId}`, 60 * 60);
-            }
-          }
-        } else {
-          throw err;
-        }
+        console.error(`[match_complete] Error for user ${socket.data.userId}:`, err);
       }
     } catch (error) {
       console.error(`[match_complete] Error for user ${socket.data.userId}:`, error);
