@@ -13,6 +13,7 @@ import { practiceData } from "@/lib/practiceData";
 import { useArenaProfile } from "@/app/hooks/useArenaProfile";
 import { useRecentlyViewed } from "@/app/hooks/useRecentlyViewed";
 import { useSheetProgress } from "@/app/hooks/useSheetProgress";
+import CodingProfilesModal from "@/app/components/CodingProfilesModal";
 
 // const badgeStyles = [
 //   "from-violet-600 to-indigo-700",
@@ -149,6 +150,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [savingAvatar, setSavingAvatar] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isCodingProfilesOpen, setIsCodingProfilesOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     branch: "",
@@ -789,7 +791,12 @@ export default function ProfilePage() {
           <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.05)] transition-colors dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-black">Coding Profiles</h2>
-              <button className="text-xs font-black text-violet-600 dark:text-violet-300">Manage -&gt;</button>
+              <button
+                type="button"
+                onClick={() => setIsCodingProfilesOpen(true)}
+                className="text-xs font-black text-violet-600 dark:text-violet-300 hover:underline">
+                Manage -&gt;
+              </button>
             </div>
             <div className="space-y-4">
               {profiles.map((profile) => {
@@ -913,6 +920,10 @@ export default function ProfilePage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <CodingProfilesModal
+        isOpen={isCodingProfilesOpen}
+        onClose={() => setIsCodingProfilesOpen(false)}
+        />
     </main>
     <Footer />
     </>
