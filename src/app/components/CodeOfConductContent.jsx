@@ -18,7 +18,7 @@ export default function CodeOfConductContent() {
             <li key={index} className="mb-4">
               <div className="bg-white dark:bg-[#14141A] p-6 rounded-2xl border border-gray-200 dark:border-[#2A2A35] transition-all duration-300">
                 <div className="flex items-start mb-3">
-                  <span className="w-7 h-7 flex-shrink-0 font-semibold text-gray-500 bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white rounded-full flex items-center justify-center mr-3 mt-0.5">
+                  <span className="w-7 h-7 flex-shrink-0 font-semibold text-gray-500 bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 rounded-full flex items-center justify-center mr-3 mt-0.5">
                     {item.id}
                   </span>
 
@@ -26,7 +26,7 @@ export default function CodeOfConductContent() {
                 </div>
 
                 {item.points && (
-                  <ul className="space-y-3 pl-10">
+                  <ul className="space-y-3 pl-8">
                     {item.points.map((subitem, subindex) => (
                       <li
                         key={subindex}
@@ -39,13 +39,13 @@ export default function CodeOfConductContent() {
                 )}
 
                 {item.data && (
-                  <p className="text-gray-700 dark:text-gray-300 pl-10 leading-relaxed">
+                  <p className="text-gray-700 dark:text-gray-300 pl-8 leading-relaxed">
                     {item.data}
                   </p>
                 )}
 
                 {item.contact && (
-                  <div className="pl-10 mt-3">
+                  <div className="pl-8 mt-3">
                     <a
                       href={`mailto:${item.contact}`}
                       className="text-gray-900 dark:text-white font-medium transition-colors"

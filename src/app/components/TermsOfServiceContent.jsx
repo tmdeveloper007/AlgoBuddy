@@ -37,7 +37,7 @@ export default function TermsOfServiceContent() {
               <li key={item.id}>
                 <a
                   href={`#terms-${item.id}`}
-                  className="block pl-4 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 border-l-2 border-transparent hover:border-purple-600 dark:hover:border-purple-400 transition-all duration-200"
+                  className="block pl-4 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-l-2 border-transparent hover:border-gray-400 dark:hover:border-purple-400 transition-all duration-200"
                 >
                   {item.title}
                 </a>
@@ -54,9 +54,6 @@ export default function TermsOfServiceContent() {
               className="scroll-mt-24 pb-10 border-b border-gray-200 dark:border-[#2A2A35]"
             >
               <div className="flex items-start mb-4">
-                <div className="w-10 h-10 flex-shrink-0 bg-gray-100 text-gray-600 dark:bg-[#1E1E26] dark:text-gray-300 rounded-xl flex items-center justify-center mr-4 mt-0.5 group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
-                </div>
                 <div className="flex-1">
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
                     {item.title}
