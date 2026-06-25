@@ -112,6 +112,37 @@ const DS_THEME = {
       </svg>
     ),
   },
+  "Quiz Mode": {
+    color: "#f59e0b",
+    bg: "#fffbeb",
+    border: "#fde68a",
+    icon: (c) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M9 12l2 2 4-4" />
+        <path d="M12 3a9 9 0 100 18 9 9 0 000-18z" />
+      </svg>
+    ),
+  },
+  "Smart Revision": {
+    color: "#8b5cf6",
+    bg: "#f5f3ff",
+    border: "#ddd6fe",
+    icon: (c) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M9 12h6M12 9v6M5 5h14v14H5z" />
+      </svg>
+    ),
+  },
+  "Collaborative Sessions": {
+    color: "#10b981",
+    bg: "#ecfdf5",
+    border: "#a7f3d0",
+    icon: (c) => (
+      <svg viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+        <path d="M17 20h5V4H2v16h5m10 0v-4a3 3 0 00-3-3H10a3 3 0 00-3 3v4m10 0H7m10-12a3 3 0 11-6 0 3 3 0 016 0zm-8 0a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
 };
 
 const getTheme = (t) =>
@@ -555,6 +586,9 @@ export default function VisualizerClient({ initialSections }) {
         .dark [data-theme-card="Recursion"] { background: #0c231e !important; border-color: #115e59 !important; }
         .dark [data-theme-card="AI Algorithms"] { background: #062d35 !important; border-color: #0891b2 !important; }
         .dark [data-theme-card="Dynamic Programming"] { background: #082f49 !important; border-color: #0284c7 !important; }
+        .dark [data-theme-card="Quiz Mode"] { background: #2b1a08 !important; border-color: #b45309 !important; }
+        .dark [data-theme-card="Smart Revision"] { background: #1a0e2d !important; border-color: #5b21b6 !important; }
+        .dark [data-theme-card="Collaborative Sessions"] { background: #022c22 !important; border-color: #047857 !important; }
         .dark [data-theme-header="Code Lab"] { background: #3e4143 !important; border-color: #4b5563 !important; }
         .dark [data-theme-header="Array"] { background: #23133d !important; border-color: #5b21b6 !important; }
         .dark [data-theme-header="Stack"] { background: #182847 !important; border-color: #1e3a8a !important; }
@@ -566,6 +600,9 @@ export default function VisualizerClient({ initialSections }) {
         .dark [data-theme-header="Recursion"] { background: #0f3129 !important; border-color: #115e59 !important; }
         .dark [data-theme-header="AI Algorithms"] { background: #0a3d47 !important; border-color: #0891b2 !important; }
         .dark [data-theme-header="Dynamic Programming"] { background: #0c4a6e !important; border-color: #0284c7 !important; }
+        .dark [data-theme-header="Quiz Mode"] { background: #3d240a !important; border-color: #b45309 !important; }
+        .dark [data-theme-header="Smart Revision"] { background: #23133d !important; border-color: #5b21b6 !important; }
+        .dark [data-theme-header="Collaborative Sessions"] { background: #064e3b !important; border-color: #047857 !important; }
         .dark [data-theme-card="Array"] .mini-viz-inactive { background: #5b21b6 !important; }
         .dark [data-theme-card="Stack"] .mini-viz-inactive { background: #1e3a8a !important; color: #93c5fd !important; }
         .dark [data-theme-card="Queue"] .mini-viz-inactive { background: #166534 !important; color: #86efac !important; }
