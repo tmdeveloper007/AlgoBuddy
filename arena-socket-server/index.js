@@ -518,6 +518,8 @@ io.on("connection", async (socket) => {
   socket.on("join_match", async (data) => {
     try {
       if (!data.matchId) return;
+      const userMatchId = await redisClient.hget(`{arena}:socket:${socket.id}`, "matchId");
+      if (!userMatchId || userMatchId !== data.matchId) return;
       const matchStr = await redisClient.get(`{arena}:match:${data.matchId}`);
       if (!matchStr) return;
       const match = JSON.parse(matchStr);
