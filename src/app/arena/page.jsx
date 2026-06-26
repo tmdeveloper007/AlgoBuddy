@@ -129,8 +129,9 @@ export default function ArenaPage() {
           const data = await res.json();
           setLiveMatches(data.matches || []);
         }
-      } catch (err) {
-        console.error("Failed to fetch live matches:", err);
+      } catch {
+        // Socket server is optional — silently ignore network errors.
+        // The UI already shows "No active battles right now." when liveMatches is empty.
       }
     };
 
