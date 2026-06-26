@@ -3,7 +3,7 @@
  */
 
 export function* bfsGenerator(adj, startNode) {
-  if (!startNode || !adj[startNode]) return;
+  if (adj == null || startNode == null || !adj[startNode]) return;
 
   const visited = new Set();
   const queue = [startNode];
