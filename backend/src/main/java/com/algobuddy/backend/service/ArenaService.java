@@ -269,10 +269,16 @@ public class ArenaService {
                     ? existingMatch.getPlayer2Id()
                     : existingMatch.getPlayer1Id();
 
+                boolean isOpponentBot = opponentId.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+
                 UserArenaProfile requestingUserProfile = profileRepository.findById(requestingUserId)
                         .orElseGet(() -> createDefaultProfile(requestingUserId));
-                UserArenaProfile opponentProfile = profileRepository.findById(opponentId)
-                        .orElseGet(() -> createDefaultProfile(opponentId));
+                
+                UserArenaProfile opponentProfile = null;
+                if (!isOpponentBot) {
+                    opponentProfile = profileRepository.findById(opponentId)
+                            .orElseGet(() -> createDefaultProfile(opponentId));
+                }
 
                 int requestingUserRatingChange = isWinner ? 25 : -15;
                 int opponentRatingChange = isWinner ? -15 : 25;
@@ -287,15 +293,19 @@ public class ArenaService {
                 if (isWinner) requestingUserProfile.setBattlesWon(requestingUserProfile.getBattlesWon() + 1);
                 else requestingUserProfile.setBattlesLost(requestingUserProfile.getBattlesLost() + 1);
 
-                opponentProfile.setRating(Math.max(0, opponentProfile.getRating() + opponentRatingChange));
-                opponentProfile.setXp(opponentProfile.getXp() + opponentXp);
-                opponentProfile.setLevel((opponentProfile.getXp() / 1000) + 1);
-                opponentProfile.setTotalProblemsSolved(opponentProfile.getTotalProblemsSolved() + (!isWinner ? 1 : 0));
-                if (!isWinner) opponentProfile.setBattlesWon(opponentProfile.getBattlesWon() + 1);
-                else opponentProfile.setBattlesLost(opponentProfile.getBattlesLost() + 1);
+                if (!isOpponentBot && opponentProfile != null) {
+                    opponentProfile.setRating(Math.max(0, opponentProfile.getRating() + opponentRatingChange));
+                    opponentProfile.setXp(opponentProfile.getXp() + opponentXp);
+                    opponentProfile.setLevel((opponentProfile.getXp() / 1000) + 1);
+                    opponentProfile.setTotalProblemsSolved(opponentProfile.getTotalProblemsSolved() + (!isWinner ? 1 : 0));
+                    if (!isWinner) opponentProfile.setBattlesWon(opponentProfile.getBattlesWon() + 1);
+                    else opponentProfile.setBattlesLost(opponentProfile.getBattlesLost() + 1);
+                }
 
                 profileRepository.save(requestingUserProfile);
-                profileRepository.save(opponentProfile);
+                if (!isOpponentBot && opponentProfile != null) {
+                    profileRepository.save(opponentProfile);
+                }
 
                 existingMatch.setWinnerId(isWinner ? requestingUserId : opponentId);
                 existingMatch.setEndTime(java.time.LocalDateTime.now());
@@ -309,9 +319,17 @@ public class ArenaService {
 
                 matchRepository.save(existingMatch);
 
-                cacheManager.getCache("arenaProfile").evict(requestingUserId);
-                cacheManager.getCache("arenaProfile").evict(opponentId);
-                cacheManager.getCache("arenaLeaderboard").clear();
+                org.springframework.cache.Cache profileCache = cacheManager.getCache("arenaProfile");
+                if (profileCache != null) {
+                    profileCache.evict(requestingUserId);
+                    if (!isOpponentBot) {
+                        profileCache.evict(opponentId);
+                    }
+                }
+                org.springframework.cache.Cache leaderboardCache = cacheManager.getCache("arenaLeaderboard");
+                if (leaderboardCache != null) {
+                    leaderboardCache.clear();
+                }
 
                 return;
             } catch (ObjectOptimisticLockingFailureException | DataIntegrityViolationException e) {
