@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Terminal, Eye, MessageSquare, Send, AlertCircle } from "lucide-react";
 import { io } from "socket.io-client";
+import confetti from "canvas-confetti";
 
 const EMOTES = ["🔥", "👏", "🤯", "😂", "❤️"];
 
@@ -145,6 +146,36 @@ export default function SpectatorSimulatorModal({ isOpen, onClose, matchData }) 
     }, 1000);
     return () => clearInterval(interval);
   }, [isOpen, matchEnded]);
+
+  // Winner Confetti
+  useEffect(() => {
+    if (matchEnded && winnerId) {
+      const duration = 3000;
+      const end = Date.now() + duration;
+
+      const frame = () => {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.8 },
+          zIndex: 9999
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.8 },
+          zIndex: 9999
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      };
+      frame();
+    }
+  }, [matchEnded, winnerId]);
 
   const handleSendChat = (e) => {
     e.preventDefault();
