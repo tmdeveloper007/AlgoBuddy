@@ -33,7 +33,9 @@ async function apiFetch(url, options = {}) {
   let data = {};
   try {
     data = text ? JSON.parse(text) : {};
-  } catch (e) {}
+  } catch (e) {
+    console.error("[apiFetch] Failed to parse API response as JSON:", e);
+  }
 
   if (!response.ok) throw new Error(data.error || "Request failed");
   return data;
@@ -79,7 +81,9 @@ export function useProblemBookmarks() {
                 method: "POST",
                 body: JSON.stringify({ problemId: b.id, topicSlug: b.topicSlug }),
               });
-            } catch (_) {}
+            } catch (error) {
+              console.error("[useProblemBookmarks] Failed to sync local bookmark to server:", error);
+            }
           }
 
           // Final state = DB items + any local-only items just synced up.

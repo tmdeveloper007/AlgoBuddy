@@ -337,13 +337,15 @@ export async function POST(request) {
 
         try {
           enqueue({ type: "error", message: userMessage });
-        } catch (_) { }
+        } catch (error) { 
+          console.error("[Chatbot API] Error enqueueing stream message:", error.message);
+        }
         // Do NOT call controller.error() — that signals a broken stream pipe to Next.js
         // and causes a 500 "failed to pipe response". We already sent the error SSE
         // event above; the finally block will close the stream cleanly.
       } finally {
         clearTimeout(timeoutId);
-        try { controller.close(); } catch (_) { }
+        try { controller.close(); } catch (error) { console.error("[Chatbot API] Error closing stream controller:", error.message); }
       }
     },
   });
