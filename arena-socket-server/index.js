@@ -440,7 +440,7 @@ io.on("connection", async (socket) => {
       const targetTopic = data.topic || "Arrays";
       const targetDifficulty = data.difficulty || "Easy";
       const queueKey = `{arena}:queue:${targetTopic}:${targetDifficulty}`;
-      const matchId = `match-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const matchId = `match-${Date.now()}-${crypto.randomUUID().split('-')[0]}`;
       const matchKey = `{arena}:match:${matchId}`;
 
       const queueEntry = JSON.stringify({
