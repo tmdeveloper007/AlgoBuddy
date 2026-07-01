@@ -16,7 +16,12 @@ class BoundedMap {
     this._map = new Map();
   }
   get(key) {
-    return this._map.get(key);
+    const value = this._map.get(key);
+    if (value !== undefined) {
+      this._map.delete(key);
+      this._map.set(key, value);
+    }
+    return value;
   }
   set(key, value) {
     if (this._map.has(key)) {
