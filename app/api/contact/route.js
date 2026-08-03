@@ -1,8 +1,48 @@
 import nodemailer from "nodemailer";
 
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export async function POST(req) {
   try {
     const { name, email, subject, message } = await req.json();
+
+    // Validate required fields
+    if (!name || typeof name !== "string" || name.trim().length === 0) {
+      return Response.json(
+        { message: "Name is required" },
+        { status: 400 }
+      );
+    }
+    if (!email || !isValidEmail(email)) {
+      return Response.json(
+        { message: "A valid email address is required" },
+        { status: 400 }
+      );
+    }
+    if (!subject || typeof subject !== "string" || subject.trim().length === 0) {
+      return Response.json(
+        { message: "Subject is required" },
+        { status: 400 }
+      );
+    }
+    if (!message || typeof message !== "string" || message.trim().length === 0) {
+      return Response.json(
+        { message: "Message is required" },
+        { status: 400 }
+      );
+    }
 
     // Create transporter
     const transporter = nodemailer.createTransport({
@@ -26,11 +66,11 @@ export async function POST(req) {
       `,
       html: `
         <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
         <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
+        <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
       `,
     };
 
@@ -40,9 +80,6 @@ export async function POST(req) {
     return Response.json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Error sending email:", error);
-    return new Response(JSON.stringify({ message: "Error sending email" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json({ message: "Error sending email" }, { status: 500 });
   }
 }
