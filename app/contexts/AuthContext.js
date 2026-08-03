@@ -1,20 +1,23 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { supabase } from '@/lib/supabase';
 
 const AuthContext = createContext();
 
-const API = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const signup = async (email, password, name) => {
+  const signup = async (email, password, name, captchaToken = '') => {
     try {
-      const res = await axios.post(`${API}/auth/signup`, {
+      const res = await axios.post(`${API_BASE}/api/auth`, {
         email,
         password,
         name,
+        action: 'signup',
+        captchaToken,
       });
 
       if (res.data.success) {
@@ -28,11 +31,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (email, password, captchaToken = '') => {
     try {
-      const res = await axios.post(`${API}/auth/login`, {
+      const res = await axios.post(`${API_BASE}/api/auth`, {
         email,
         password,
+        action: 'login',
+        captchaToken,
       });
 
       if (res.data.success) {
@@ -54,16 +59,12 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const res = await axios.get(`${API}/auth/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (res.data.user) setUser(res.data.user);
-        } catch {
-          localStorage.removeItem('token');
-        }
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        setUser(data.session.user);
+        localStorage.setItem('token', data.session.access_token);
+      } else {
+        localStorage.removeItem('token');
       }
     };
 
