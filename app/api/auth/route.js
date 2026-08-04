@@ -5,9 +5,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || "placeholder-key",
 );
 
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(String(email).trim());
+}
+
 export async function POST(req) {
   try {
-    // Parse JSON body safely
     const body = await req.json();
     const { email, password, captchaToken, action, name } = body || {};
 
@@ -21,38 +25,58 @@ export async function POST(req) {
         { status: 400 },
       );
     }
-    if (!captchaToken) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Captcha token missing" }),
-        { status: 400 },
-      );
-    }
 
-    // Verify Turnstile token for both signup and login
-    const verifyRes = await fetch(
-      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          secret: process.env.TURNSTILE_SECRET_KEY,
-          response: captchaToken,
-        }),
-      },
-    );
-    const verifyData = await verifyRes.json();
-    if (!verifyData.success) {
+    // Validate email format
+    if (!isValidEmail(email)) {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Captcha verification failed",
+          message: "Invalid email address format",
         }),
         { status: 400 },
       );
     }
 
+    // Validate password length for signup
     if (action === "signup") {
-      // Create Supabase user with metadata
+      if (password.length < 8) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Password must be at least 8 characters long",
+          }),
+          { status: 400 },
+        );
+      }
+      if (!captchaToken) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Captcha token missing" }),
+          { status: 400 },
+        );
+      }
+
+      const verifyRes = await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            secret: process.env.TURNSTILE_SECRET_KEY,
+            response: captchaToken,
+          }),
+        },
+      );
+      const verifyData = await verifyRes.json();
+      if (!verifyData.success) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Captcha verification failed",
+          }),
+          { status: 400 },
+        );
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -75,7 +99,35 @@ export async function POST(req) {
         { status: 200 },
       );
     } else if (action === "login") {
-      // For login, only verify captcha and return success.
+      if (!captchaToken) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Captcha token missing" }),
+          { status: 400 },
+        );
+      }
+
+      const verifyRes = await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            secret: process.env.TURNSTILE_SECRET_KEY,
+            response: captchaToken,
+          }),
+        },
+      );
+      const verifyData = await verifyRes.json();
+      if (!verifyData.success) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Captcha verification failed",
+          }),
+          { status: 400 },
+        );
+      }
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -83,10 +135,7 @@ export async function POST(req) {
         }),
         { status: 200 },
       );
-    }
-
-    // Invalid action
-    else {
+    } else {
       return new Response(
         JSON.stringify({ success: false, message: "Invalid action" }),
         { status: 400 },
