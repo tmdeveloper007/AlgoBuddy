@@ -19,9 +19,13 @@ function ActivityDashboard({ userId }) {
         .eq("user_id", userId);
 
       if (!error && data) {
-        const dates = data.map(
-          (item) => new Date(item.activity_date).toISOString().split("T")[0]
-        );
+        const dates = data
+          .map((item) => {
+            if (!item || !item.activity_date) return null;
+            const parsed = new Date(item.activity_date);
+            return isNaN(parsed.getTime()) ? null : parsed.toISOString().split("T")[0];
+          })
+          .filter(Boolean);
         setActivityDates(dates);
       }
       setLoading(false);
