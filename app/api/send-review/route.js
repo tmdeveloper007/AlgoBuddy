@@ -2,10 +2,27 @@ import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
 export async function POST(request) {
-  const { name, email, review, rating, to } = await request.json();
+  const body = await request.json();
+  const { name, email, review, rating, to } = body || {};
+
+  // Validate required fields
+  if (!name || !email || !review || rating === undefined) {
+    return NextResponse.json(
+      { success: false, error: 'Missing required fields: name, email, review, rating' },
+      { status: 400 }
+    );
+  }
+
+  // Validate rating range
+  const ratingNum = Number(rating);
+  if (!Number.isInteger(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+    return NextResponse.json(
+      { success: false, error: 'Rating must be an integer between 1 and 5' },
+      { status: 400 }
+    );
+  }
 
   try {
-    // Create transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -14,22 +31,24 @@ export async function POST(request) {
       },
     });
 
-    // Email options
+    const safeName = String(name).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeEmail = String(email).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safeReview = String(review).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: to || 'routsohan2006@gmail.com', // Default to your email
-      subject: `New Review Submission from ${name}`,
+      to: to || 'routsohan2006@gmail.com',
+      subject: `New Review Submission from ${safeName}`,
       html: `
         <h2>New Review Received</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Rating:</strong> ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        <p><strong>Rating:</strong> ${'\u2605'.repeat(ratingNum)}${'\u2606'.repeat(5 - ratingNum)}</p>
         <p><strong>Review:</strong></p>
-        <p>${review}</p>
+        <p>${safeReview}</p>
       `,
     };
 
-    // Send email
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ success: true });
