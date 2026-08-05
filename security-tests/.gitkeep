@@ -1,0 +1,6 @@
+# Security Tests Directory
+
+Tests in this directory use Node.js built-in test runner.
+Run with: node --test security-tests/*.test.cjs
+
+Naming convention: <feature>.test.cjs
