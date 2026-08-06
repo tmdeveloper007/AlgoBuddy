@@ -1,5 +1,14 @@
 import nodemailer from "nodemailer";
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function POST(req) {
   try {
     const { name, email, subject, message } = await req.json();
@@ -17,7 +26,7 @@ export async function POST(req) {
     const mailOptions = {
       from: email,
       to: process.env.EMAIL_USER,
-      subject: `New Contact Form Submission: ${subject}`,
+      subject: `New Contact Form Submission: ${escapeHtml(subject)}`,
       text: `
         Name: ${name}
         Email: ${email}
@@ -26,11 +35,11 @@ export async function POST(req) {
       `,
       html: `
         <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+        <p><strong>Subject:</strong> ${escapeHtml(subject)}</p>
         <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
+        <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
       `,
     };
 
