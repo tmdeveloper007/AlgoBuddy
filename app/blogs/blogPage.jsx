@@ -5,6 +5,7 @@ import {
   FiClock,
   FiCalendar,
   FiArrowRight,
+  FiSearch,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import PopularTopics from "@/app/blogs/components/PopularTopics";
@@ -301,7 +302,9 @@ const BlogPage = () => {
               ))
             ) : (
               <div className="text-center py-16">
-                <div className="text-5xl mb-4">🔍</div>
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-zinc-100 dark:bg-zinc-800">
+                  <FiSearch className="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+                </div>
                 <h3 className="text-xl font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                   No articles found
                 </h3>
