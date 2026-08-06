@@ -117,7 +117,7 @@ const BlogContent = () => {
       {/* Featured Image */}
       <div className="relative w-full h-64 md:h-96 bg-gray-100 dark:bg-zinc-800 rounded-xl mb-12 overflow-hidden">
         <img
-          src="/blog/whatIsDs.png"
+          src="/blog/whatIsDS.png"
           alt="Visual representation of different data structures"
           className="w-full h-full object-cover"
         />
